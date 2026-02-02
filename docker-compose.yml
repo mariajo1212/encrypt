@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  caas-api:
+    build: .
+    container_name: caas-prototype
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    environment:
+      - APP_NAME=CaaS-Prototype
+      - ENVIRONMENT=production
+      - HOST=0.0.0.0
+      - PORT=8000
+    env_file:
+      - .env
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8000/api/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - caas-network
+
+networks:
+  caas-network:
+    driver: bridge

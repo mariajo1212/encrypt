@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CaaS - Crypto as a Service</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --dark: #1f2937;
+            --gray: #6b7280;
+            --light: #f3f4f6;
+            --border: #e5e7eb;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--dark);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Login Page */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-box h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            color: var(--primary);
+            font-size: 2em;
+        }
+
+        .login-box p {
+            text-align: center;
+            color: var(--gray);
+            margin-bottom: 30px;
+        }
+
+        /* Dashboard */
+        .dashboard {
+            display: none;
+        }
+
+        .dashboard.active {
+            display: block;
+        }
+
+        .header {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: var(--primary);
+            font-size: 1.8em;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-badge {
+            background: var(--primary);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            background: white;
+            padding: 12px 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .tab:hover {
+            background: var(--light);
+        }
+
+        .tab.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+            font-family: monospace;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--gray);
+            color: white;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        /* Cards */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .card {
+            background: var(--light);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid var(--border);
+            transition: all 0.3s;
+        }
+
+        .card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h3 {
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+
+        .card-meta {
+            font-size: 12px;
+            color: var(--gray);
+            margin-bottom: 15px;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        /* Alerts */
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #ef4444;
+        }
+
+        .alert-info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #2563eb;
+        }
+
+        /* Loading */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Table */
+        .table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table th,
+        table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        table th {
+            background: var(--light);
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        table tr:hover {
+            background: var(--light);
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1f2937;
+            color: #10b981;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            overflow-x: auto;
+            margin-top: 10px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .tabs {
+                overflow-x: auto;
+            }
+
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Page -->
+    <div id="loginPage" class="login-container">
+        <div class="login-box">
+            <h1>🔐 CaaS</h1>
+            <p>Crypto as a Service</p>
+
+            <div id="loginAlert"></div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Usuario</label>
+                    <input type="text" id="username" placeholder="admin" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Contraseña</label>
+                    <input type="password" id="password" placeholder="Admin123!" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    <span id="loginBtnText">Iniciar Sesión</span>
+                    <span id="loginLoader" class="loading hidden"></span>
+                </button>
+            </form>
+
+            <div style="margin-top: 20px; padding: 15px; background: var(--light); border-radius: 8px; font-size: 13px;">
+                <strong>Usuarios de prueba:</strong><br>
+                • admin / Admin123!<br>
+                • testuser / Test123!<br>
+                • demo / Demo123!
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="dashboard" class="dashboard container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🔐 CaaS Dashboard</h1>
+            <div class="user-info">
+                <span class="user-badge" id="currentUser"></span>
+                <button class="btn btn-danger" onclick="logout()">Cerrar Sesión</button>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('keys')">🔑 Claves</div>
+            <div class="tab" onclick="switchTab('encrypt')">🔒 Cifrar/Descifrar</div>
+            <div class="tab" onclick="switchTab('hash')"># Hash</div>
+            <div class="tab" onclick="switchTab('sign')">✍️ Firmas</div>
+            <div class="tab" onclick="switchTab('audit')">📋 Auditoría</div>
+        </div>
+
+        <!-- Keys Tab -->
+        <div id="keysTab" class="tab-content active">
+            <h2>Gestión de Claves Criptográficas</h2>
+            <p style="color: var(--gray); margin-bottom: 20px;">Crea y administra claves para operaciones criptográficas</p>
+
+            <div id="keysAlert"></div>
+
+            <form id="createKeyForm" style="background: var(--light); padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                <h3>Crear Nueva Clave</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+                    <div class="form-group">
+                        <label>Nombre de la Clave</label>
+                        <input type="text" id="keyName" placeholder="MiClave" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo de Clave</label>
+                        <select id="keyType" onchange="updateAlgorithms()">
+                            <option value="symmetric">Simétrica (AES)</option>
+                            <option value="rsa">Asimétrica (RSA)</option>
+                            <option value="ecc">Curva Elíptica (ECC)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Algoritmo</label>
+                        <select id="keyAlgorithm">
+                            <option value="AES-256">AES-256</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Crear Clave</button>
+            </form>
+
+            <h3>Mis Claves</h3>
+            <button class="btn btn-secondary" onclick="loadKeys()" style="margin-bottom: 15px;">🔄 Actualizar</button>
+            <div id="keysList" class="cards-grid"></div>
+        </div>
+
+        <!-- Encrypt/Decrypt Tab -->
+        <div id="encryptTab" class="tab-content">
+            <h2>Cifrado y Descifrado</h2>
+            <p style="color: var(--gray); margin-bottom: 20px;">Protege tus datos con cifrado AES-256</p>
+
+            <div id="encryptAlert"></div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <!-- Encrypt -->
+                <div style="background: var(--light); padding: 20px; border-radius: 10px;">
+                    <h3>🔒 Cifrar</h3>
+                    <form id="encryptForm">
+                        <div class="form-group">
+                            <label>Seleccionar Clave</label>
+                            <select id="encryptKeyId" required>
+                                <option value="">Selecciona una clave...</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Modo de Cifrado</label>
+                            <select id="encryptMode">
+                                <option value="GCM">GCM (Recomendado)</option>
+                                <option value="CBC">CBC</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Texto a Cifrar</label>
+                            <textarea id="plaintext" placeholder="Escribe el texto que deseas cifrar..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-success">Cifrar Datos</button>
+                    </form>
+                </div>
+
+                <!-- Decrypt -->
+                <div style="background: var(--light); padding: 20px; border-radius: 10px;">
+                    <h3>🔓 Descifrar</h3>
+                    <form id="decryptForm">
+                        <div class="form-group">
+                            <label>Seleccionar Clave</label>
+                            <select id="decryptKeyId" required>
+                                <option value="">Selecciona una clave...</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Modo de Cifrado</label>
+                            <select id="decryptMode">
+                                <option value="GCM">GCM</option>
+                                <option value="CBC">CBC</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Texto Cifrado (Base64)</label>
+                            <textarea id="ciphertext" placeholder="Pega el texto cifrado..." required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>IV/Nonce (Base64)</label>
+                            <input type="text" id="decryptIv" placeholder="Vector de inicialización" required>
+                        </div>
+                        <div class="form-group" id="decryptTagGroup">
+                            <label>Tag de Autenticación (Base64)</label>
+                            <input type="text" id="decryptTag" placeholder="Solo para GCM">
+                        </div>
+                        <button type="submit" class="btn btn-success">Descifrar Datos</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hash Tab -->
+        <div id="hashTab" class="tab-content">
+            <h2>Funciones Hash</h2>
+            <p style="color: var(--gray); margin-bottom: 20px;">Genera hashes criptográficos para verificar integridad</p>
+
+            <div id="hashAlert"></div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <!-- Generate Hash -->
+                <div style="background: var(--light); padding: 20px; border-radius: 10px;">
+                    <h3># Generar Hash</h3>
+                    <form id="hashForm">
+                        <div class="form-group">
+                            <label>Algoritmo</label>
+                            <select id="hashAlgorithm">
+                                <option value="SHA-256">SHA-256</option>
+                                <option value="SHA-384">SHA-384</option>
+                                <option value="SHA-512">SHA-512</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Datos a Hashear</label>
+                            <textarea id="hashData" placeholder="Escribe los datos..." required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Formato de Salida</label>
+                            <select id="hashEncoding">
+                                <option value="hex">Hexadecimal</option>
+                                <option value="base64">Base64</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-success">Generar Hash</button>
+                    </form>
+                </div>
+
+                <!-- Verify Hash -->
+                <div style="background: var(--light); padding: 20px; border-radius: 10px;">
+                    <h3>✓ Verificar Hash</h3>
+                    <form id="verifyHashForm">
+                        <div class="form-group">
+                            <label>Algoritmo</label>
+                            <select id="verifyAlgorithm">
+                                <option value="SHA-256">SHA-256</option>
+                                <option value="SHA-384">SHA-384</option>
+                                <option value="SHA-512">SHA-512</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Datos Originales</label>
+                            <textarea id="verifyData" placeholder="Datos a verificar..." required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Hash Esperado</label>
+                            <input type="text" id="expectedHash" placeholder="Hash a comparar..." required>
+                        </div>
+                        <button type="submit" class="btn btn-success">Verificar Hash</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Signatures Tab -->
+        <div id="signTab" class="tab-content">
+            <h2>Firmas Digitales</h2>
+            <p style="color: var(--gray); margin-bottom: 20px;">Firma y verifica documentos con RSA/ECC</p>
+
+            <div id="signAlert"></div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <!-- Sign -->
+                <div style="background: var(--light); padding: 20px; border-radius: 10px;">
+                    <h3>✍️ Firmar Datos</h3>
+                    <form id="signForm">
+                        <div class="form-group">
+                            <label>Clave Privada</label>
+                            <select id="signKeyId" required>
+                                <option value="">Selecciona clave privada...</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Datos a Firmar</label>
+                            <textarea id="signData" placeholder="Documento o mensaje a firmar..." required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Algoritmo Hash</label>
+                            <select id="signHashAlgo">
+                                <option value="SHA-256">SHA-256</option>
+                                <option value="SHA-384">SHA-384</option>
+                                <option value="SHA-512">SHA-512</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-success">Firmar</button>
+                    </form>
+                </div>
+
+                <!-- Verify Signature -->
+                <div style="background: var(--light); padding: 20px; border-radius: 10px;">
+                    <h3>✓ Verificar Firma</h3>
+                    <form id="verifySignForm">
+                        <div class="form-group">
+                            <label>Clave Pública</label>
+                            <select id="verifyKeyId" required>
+                                <option value="">Selecciona clave pública...</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Datos Originales</label>
+                            <textarea id="verifySignData" placeholder="Datos firmados..." required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Firma (Base64)</label>
+                            <input type="text" id="signature" placeholder="Firma digital..." required>
+                        </div>
+                        <div class="form-group">
+                            <label>Algoritmo Hash</label>
+                            <select id="verifyHashAlgo">
+                                <option value="SHA-256">SHA-256</option>
+                                <option value="SHA-384">SHA-384</option>
+                                <option value="SHA-512">SHA-512</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-success">Verificar Firma</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Audit Tab -->
+        <div id="auditTab" class="tab-content">
+            <h2>Logs de Auditoría</h2>
+            <p style="color: var(--gray); margin-bottom: 20px;">Historial de todas las operaciones realizadas</p>
+
+            <button class="btn btn-secondary" onclick="loadAuditLogs()">🔄 Actualizar Logs</button>
+
+            <div class="table-container">
+                <table id="auditTable">
+                    <thead>
+                        <tr>
+                            <th>Fecha/Hora</th>
+                            <th>Usuario</th>
+                            <th>Operación</th>
+                            <th>Estado</th>
+                            <th>Detalles</th>
+                        </tr>
+                    </thead>
+                    <tbody id="auditTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // API Configuration
+        const API_BASE = 'http://localhost:8000';
+        let accessToken = localStorage.getItem('accessToken');
+        let currentUsername = localStorage.getItem('username');
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            if (accessToken && currentUsername) {
+                showDashboard();
+            }
+        });
+
+        // Login
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            showLoading('login', true);
+
+            try {
+                const response = await fetch(`${API_BASE}/auth/token`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    accessToken = data.access_token;
+                    currentUsername = username;
+                    localStorage.setItem('accessToken', accessToken);
+                    localStorage.setItem('username', username);
+                    showAlert('loginAlert', 'Inicio de sesión exitoso!', 'success');
+                    setTimeout(showDashboard, 500);
+                } else {
+                    showAlert('loginAlert', data.error?.message || 'Error al iniciar sesión', 'error');
+                }
+            } catch (error) {
+                showAlert('loginAlert', 'Error de conexión con el servidor', 'error');
+            } finally {
+                showLoading('login', false);
+            }
+        });
+
+        function showDashboard() {
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('dashboard').classList.add('active');
+            document.getElementById('currentUser').textContent = currentUsername;
+            loadKeys();
+            loadAuditLogs();
+        }
+
+        function logout() {
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('username');
+            location.reload();
+        }
+
+        // Tab Switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+            event.target.classList.add('active');
+            document.getElementById(tabName + 'Tab').classList.add('active');
+
+            if (tabName === 'keys') loadKeys();
+            if (tabName === 'encrypt') loadKeysForEncryption();
+            if (tabName === 'sign') loadKeysForSigning();
+            if (tabName === 'audit') loadAuditLogs();
+        }
+
+        // Keys Management
+        document.getElementById('createKeyForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const keyName = document.getElementById('keyName').value;
+            let keyType = document.getElementById('keyType').value;
+            const algorithm = document.getElementById('keyAlgorithm').value;
+
+            // Convert key type to backend format
+            // For RSA and ECC, we request private key and backend generates the pair
+            if (keyType === 'rsa') keyType = 'rsa_private';
+            if (keyType === 'ecc') keyType = 'ecc_private';
+
+            try {
+                const response = await apiCall('/api/keys', 'POST', {
+                    key_name: keyName,
+                    key_type: keyType,
+                    algorithm: algorithm
+                });
+
+                if (response.ok) {
+                    showAlert('keysAlert', 'Clave creada exitosamente!', 'success');
+                    e.target.reset();
+                    loadKeys();
+                } else {
+                    const data = await response.json();
+                    showAlert('keysAlert', data.error?.message || 'Error al crear clave', 'error');
+                }
+            } catch (error) {
+                showAlert('keysAlert', 'Error de conexión', 'error');
+            }
+        });
+
+        async function loadKeys() {
+            try {
+                const response = await apiCall('/api/keys', 'GET');
+                const data = await response.json();
+
+                if (response.ok && data.keys) {
+                    const keysList = document.getElementById('keysList');
+                    keysList.innerHTML = data.keys.map(key => `
+                        <div class="card">
+                            <h3>${key.key_name}</h3>
+                            <div class="card-meta">
+                                <strong>Tipo:</strong> ${key.key_type}<br>
+                                <strong>Algoritmo:</strong> ${key.algorithm}<br>
+                                <strong>ID:</strong> ${key.id}<br>
+                                <strong>Creada:</strong> ${new Date(key.created_at).toLocaleString()}
+                            </div>
+                            <div class="card-actions">
+                                <button class="btn btn-danger" onclick="deleteKey('${key.id}')">Eliminar</button>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    document.getElementById('keysList').innerHTML = '<p>No hay claves disponibles</p>';
+                }
+            } catch (error) {
+                showAlert('keysAlert', 'Error al cargar claves', 'error');
+            }
+        }
+
+        async function deleteKey(keyId) {
+            if (!confirm('¿Seguro que deseas eliminar esta clave?')) return;
+
+            try {
+                const response = await apiCall(`/api/keys/${keyId}`, 'DELETE');
+                if (response.ok) {
+                    showAlert('keysAlert', 'Clave eliminada!', 'success');
+                    loadKeys();
+                }
+            } catch (error) {
+                showAlert('keysAlert', 'Error al eliminar clave', 'error');
+            }
+        }
+
+        function updateAlgorithms() {
+            const keyType = document.getElementById('keyType').value;
+            const algorithmSelect = document.getElementById('keyAlgorithm');
+
+            const algorithms = {
+                symmetric: ['AES-256'],
+                rsa: ['RSA-2048', 'RSA-4096'],
+                ecc: ['ECC-P256', 'ECC-P384', 'ECC-P521']
+            };
+
+            algorithmSelect.innerHTML = algorithms[keyType].map(algo =>
+                `<option value="${algo}">${algo}</option>`
+            ).join('');
+        }
+
+        // Encryption
+        async function loadKeysForEncryption() {
+            try {
+                const response = await apiCall('/api/keys', 'GET');
+                const data = await response.json();
+
+                if (response.ok && data.keys) {
+                    const symmetricKeys = data.keys.filter(k => k.key_type === 'symmetric');
+                    const options = symmetricKeys.map(k =>
+                        `<option value="${k.id}">${k.key_name} (${k.algorithm})</option>`
+                    ).join('');
+
+                    document.getElementById('encryptKeyId').innerHTML =
+                        '<option value="">Selecciona una clave...</option>' + options;
+                    document.getElementById('decryptKeyId').innerHTML =
+                        '<option value="">Selecciona una clave...</option>' + options;
+                }
+            } catch (error) {
+                console.error('Error loading keys:', error);
+            }
+        }
+
+        document.getElementById('encryptForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const keyId = document.getElementById('encryptKeyId').value;
+            const plaintext = document.getElementById('plaintext').value;
+            const mode = document.getElementById('encryptMode').value;
+
+            try {
+                const response = await apiCall('/api/crypto/encrypt', 'POST', {
+                    key_id: keyId,
+                    plaintext: plaintext,
+                    mode: mode
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showAlert('encryptAlert', 'Datos cifrados exitosamente!', 'success');
+                    document.getElementById('encryptAlert').innerHTML += `
+                        <div class="code-block">
+                            <strong>Ciphertext:</strong> ${data.ciphertext}<br>
+                            <strong>IV/Nonce:</strong> ${data.iv || data.nonce}<br>
+                            ${data.tag ? `<strong>Tag:</strong> ${data.tag}` : ''}
+                        </div>
+                    `;
+                } else {
+                    showAlert('encryptAlert', data.error?.message || 'Error al cifrar', 'error');
+                }
+            } catch (error) {
+                showAlert('encryptAlert', 'Error de conexión', 'error');
+            }
+        });
+
+        document.getElementById('decryptForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const keyId = document.getElementById('decryptKeyId').value;
+            const ciphertext = document.getElementById('ciphertext').value;
+            const mode = document.getElementById('decryptMode').value;
+            const iv = document.getElementById('decryptIv').value;
+            const tag = document.getElementById('decryptTag').value;
+
+            const payload = {
+                key_id: keyId,
+                ciphertext: ciphertext,
+                iv: iv,
+                mode: mode
+            };
+
+            if (mode === 'GCM' && tag) {
+                payload.tag = tag;
+            }
+
+            try {
+                const response = await apiCall('/api/crypto/decrypt', 'POST', payload);
+                const data = await response.json();
+
+                if (response.ok) {
+                    showAlert('encryptAlert', 'Datos descifrados exitosamente!', 'success');
+                    document.getElementById('encryptAlert').innerHTML += `
+                        <div class="code-block">
+                            <strong>Texto Original:</strong><br>${data.plaintext}
+                        </div>
+                    `;
+                } else {
+                    showAlert('encryptAlert', data.error?.message || 'Error al descifrar', 'error');
+                }
+            } catch (error) {
+                showAlert('encryptAlert', 'Error de conexión', 'error');
+            }
+        });
+
+        // Hash
+        document.getElementById('hashForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = document.getElementById('hashData').value;
+            const algorithm = document.getElementById('hashAlgorithm').value;
+            const encoding = document.getElementById('hashEncoding').value;
+
+            try {
+                const response = await apiCall('/api/crypto/hash', 'POST', {
+                    data: data,
+                    algorithm: algorithm,
+                    encoding: encoding
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showAlert('hashAlert', 'Hash generado exitosamente!', 'success');
+                    document.getElementById('hashAlert').innerHTML += `
+                        <div class="code-block">
+                            <strong>Hash ${algorithm}:</strong><br>${result.hash}
+                        </div>
+                    `;
+                } else {
+                    showAlert('hashAlert', result.error?.message || 'Error al generar hash', 'error');
+                }
+            } catch (error) {
+                showAlert('hashAlert', 'Error de conexión', 'error');
+            }
+        });
+
+        document.getElementById('verifyHashForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = document.getElementById('verifyData').value;
+            const algorithm = document.getElementById('verifyAlgorithm').value;
+            const expectedHash = document.getElementById('expectedHash').value;
+
+            try {
+                const response = await apiCall('/api/crypto/hash/verify', 'POST', {
+                    data: data,
+                    hash: expectedHash,
+                    algorithm: algorithm
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    if (result.verified) {
+                        showAlert('hashAlert', 'Hash válido! Los datos no han sido modificados.', 'success');
+                    } else {
+                        showAlert('hashAlert', 'Hash inválido! Los datos han sido alterados.', 'error');
+                    }
+                } else {
+                    showAlert('hashAlert', result.error?.message || 'Error al verificar hash', 'error');
+                }
+            } catch (error) {
+                showAlert('hashAlert', 'Error de conexión', 'error');
+            }
+        });
+
+        // Signatures
+        async function loadKeysForSigning() {
+            try {
+                const response = await apiCall('/api/keys', 'GET');
+                const data = await response.json();
+
+                if (response.ok && data.keys) {
+                    const privateKeys = data.keys.filter(k => k.key_type.includes('private'));
+                    const publicKeys = data.keys.filter(k => k.key_type.includes('public'));
+
+                    document.getElementById('signKeyId').innerHTML =
+                        '<option value="">Selecciona clave privada...</option>' +
+                        privateKeys.map(k => `<option value="${k.id}">${k.key_name} (${k.algorithm})</option>`).join('');
+
+                    document.getElementById('verifyKeyId').innerHTML =
+                        '<option value="">Selecciona clave pública...</option>' +
+                        publicKeys.map(k => `<option value="${k.id}">${k.key_name} (${k.algorithm})</option>`).join('');
+                }
+            } catch (error) {
+                console.error('Error loading keys:', error);
+            }
+        }
+
+        document.getElementById('signForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const keyId = document.getElementById('signKeyId').value;
+            const data = document.getElementById('signData').value;
+            const hashAlgo = document.getElementById('signHashAlgo').value;
+
+            // Determine signature algorithm based on selected key
+            const selectedOption = document.getElementById('signKeyId').selectedOptions[0];
+            const keyAlgorithm = selectedOption ? selectedOption.text.match(/\((.*?)\)/)?.[1] : '';
+
+            let signatureAlgorithm = 'RSA-PSS'; // Default
+            if (keyAlgorithm && keyAlgorithm.startsWith('ECC')) {
+                signatureAlgorithm = 'ECDSA';
+            } else if (keyAlgorithm && keyAlgorithm.startsWith('RSA')) {
+                signatureAlgorithm = 'RSA-PSS'; // Or 'RSA-PKCS1'
+            }
+
+            try {
+                const response = await apiCall('/api/crypto/sign', 'POST', {
+                    key_id: keyId,
+                    data: data,
+                    algorithm: signatureAlgorithm,
+                    hash_algorithm: hashAlgo
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showAlert('signAlert', 'Datos firmados exitosamente!', 'success');
+                    document.getElementById('signAlert').innerHTML += `
+                        <div class="code-block">
+                            <strong>Firma Digital (Base64):</strong><br>${result.signature}
+                        </div>
+                    `;
+                } else {
+                    showAlert('signAlert', result.error?.message || 'Error al firmar', 'error');
+                }
+            } catch (error) {
+                showAlert('signAlert', 'Error de conexión', 'error');
+            }
+        });
+
+        document.getElementById('verifySignForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const keyId = document.getElementById('verifyKeyId').value;
+            const data = document.getElementById('verifySignData').value;
+            const signature = document.getElementById('signature').value;
+            const hashAlgo = document.getElementById('verifyHashAlgo').value;
+
+            // Determine signature algorithm based on selected key
+            const selectedOption = document.getElementById('verifyKeyId').selectedOptions[0];
+            const keyAlgorithm = selectedOption ? selectedOption.text.match(/\((.*?)\)/)?.[1] : '';
+
+            let signatureAlgorithm = 'RSA-PSS'; // Default
+            if (keyAlgorithm && keyAlgorithm.startsWith('ECC')) {
+                signatureAlgorithm = 'ECDSA';
+            } else if (keyAlgorithm && keyAlgorithm.startsWith('RSA')) {
+                signatureAlgorithm = 'RSA-PSS';
+            }
+
+            try {
+                const response = await apiCall('/api/crypto/verify', 'POST', {
+                    key_id: keyId,
+                    data: data,
+                    signature: signature,
+                    algorithm: signatureAlgorithm,
+                    hash_algorithm: hashAlgo
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    if (result.verified) {
+                        showAlert('signAlert', 'Firma válida! El documento es auténtico.', 'success');
+                    } else {
+                        showAlert('signAlert', 'Firma inválida! El documento ha sido modificado.', 'error');
+                    }
+                } else {
+                    showAlert('signAlert', result.error?.message || 'Error al verificar firma', 'error');
+                }
+            } catch (error) {
+                showAlert('signAlert', 'Error de conexión', 'error');
+            }
+        });
+
+        // Audit Logs
+        async function loadAuditLogs() {
+            try {
+                const response = await apiCall('/api/audit/logs?limit=50', 'GET');
+                const data = await response.json();
+
+                if (response.ok && data.logs) {
+                    const tbody = document.getElementById('auditTableBody');
+                    tbody.innerHTML = data.logs.map(log => `
+                        <tr>
+                            <td>${new Date(log.timestamp).toLocaleString()}</td>
+                            <td>${log.username || 'N/A'}</td>
+                            <td><span style="background: var(--primary); color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">${log.operation}</span></td>
+                            <td><span style="background: ${log.status === 'success' ? 'var(--success)' : 'var(--danger)'}; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">${log.status}</span></td>
+                            <td style="font-size: 12px;">${log.resource_type || '-'} ${log.resource_id ? '('+log.resource_id.substring(0,8)+'...)' : ''}</td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Error loading audit logs:', error);
+            }
+        }
+
+        // Utility Functions
+        async function apiCall(endpoint, method, body = null) {
+            const options = {
+                method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`
+                }
+            };
+
+            if (body) {
+                options.body = JSON.stringify(body);
+            }
+
+            return fetch(API_BASE + endpoint, options);
+        }
+
+        function showAlert(containerId, message, type) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = `
+                <div class="alert alert-${type}">
+                    ${type === 'success' ? '✓' : type === 'error' ? '✗' : 'ℹ'} ${message}
+                </div>
+            `;
+            setTimeout(() => container.innerHTML = '', 5000);
+        }
+
+        function showLoading(prefix, show) {
+            document.getElementById(prefix + 'BtnText').style.display = show ? 'none' : 'inline';
+            document.getElementById(prefix + 'Loader').classList.toggle('hidden', !show);
+        }
+    </script>
+</body>
+</html>

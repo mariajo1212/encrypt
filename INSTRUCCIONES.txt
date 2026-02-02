@@ -1,0 +1,85 @@
+================================================================================
+  INSTRUCCIONES DE INSTALACION Y EJECUCION - CaaS Prototype
+================================================================================
+
+PASO 1: INSTALAR PYTHON
+------------------------
+Opcion A - Usando Microsoft Store (MAS FACIL):
+   1. Presiona Windows + S
+   2. Busca "Microsoft Store"
+   3. Busca "Python 3.12" o "Python 3.11"
+   4. Haz clic en "Obtener/Instalar"
+   5. Espera a que termine la instalacion
+
+Opcion B - Desde python.org:
+   1. Abre: https://www.python.org/downloads/
+   2. Descarga Python 3.10 o superior
+   3. IMPORTANTE: Durante instalacion marca "Add Python to PATH"
+   4. Instala normalmente
+
+Opcion C - Usando winget (desde PowerShell):
+   Abre PowerShell como Administrador y ejecuta:
+   winget install Python.Python.3.11
+
+
+PASO 2: EJECUTAR EL PROYECTO
+-----------------------------
+Despues de instalar Python, CIERRA y ABRE una nueva terminal, luego:
+
+1. Abre PowerShell o CMD
+
+2. Navega al proyecto:
+   cd "c:\Users\maria\Desktop\unir\TFM\Codigo"
+
+3. Instala dependencias:
+   python -m pip install -r requirements.txt
+
+4. Inicializa la base de datos:
+   python app\db\seed.py
+
+5. Ejecuta la aplicacion:
+   python run.py
+
+
+PASO 3: ACCEDER A LA APLICACION
+--------------------------------
+Una vez iniciado, abre tu navegador en:
+   - API Docs: http://localhost:8000/api/docs
+   - Health:   http://localhost:8000/api/health
+
+
+USUARIOS DE PRUEBA
+------------------
+Username: admin     | Password: Admin123!
+Username: testuser  | Password: Test123!
+Username: demo      | Password: Demo123!
+
+
+PRUEBA RAPIDA CON CURL (Opcional)
+----------------------------------
+1. Obtener token:
+curl -X POST http://localhost:8000/api/auth/token ^
+  -H "Content-Type: application/json" ^
+  -d "{\"username\":\"admin\",\"password\":\"Admin123!\"}"
+
+2. Usar el token en siguientes peticiones con:
+   -H "Authorization: Bearer TU_TOKEN_AQUI"
+
+
+SOLUCION DE PROBLEMAS
+----------------------
+- Si "python no encontrado": Instala Python y reinicia la terminal
+- Si "pip no encontrado": python -m pip install --upgrade pip
+- Si puerto 8000 ocupado: Cambia PORT=8001 en el archivo .env
+
+
+ALTERNATIVA: USAR DOCKER
+-------------------------
+Si tienes Docker Desktop instalado:
+
+1. docker build -t caas .
+2. docker run -d -p 8000:8000 --name caas caas
+3. docker exec -it caas python app/db/seed.py
+4. Accede a http://localhost:8000/api/docs
+
+================================================================================
