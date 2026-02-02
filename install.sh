@@ -32,22 +32,31 @@ apt-get install -y python3 python3-pip python3-venv git nginx ufw
 PYTHON_VERSION=$(python3 --version | cut -d' ' -f2 | cut -d'.' -f1,2)
 echo "Python version: $PYTHON_VERSION"
 
-echo "[3/8] Creating application directory..."
-APP_DIR="/opt/caas"
-mkdir -p $APP_DIR
-cd $APP_DIR
+echo "[3/8] Detecting application files..."
+# Get the directory where this script is located
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-echo "[4/8] Copying application files..."
-# If running from the repo directory
-if [ -d "$ACTUAL_HOME/CaaS" ]; then
-    cp -r $ACTUAL_HOME/CaaS/* $APP_DIR/
-elif [ -d "$PWD/app" ]; then
-    cp -r ./* $APP_DIR/
-else
+# Check if we're in the application directory
+if [ ! -f "$SCRIPT_DIR/run.py" ] || [ ! -d "$SCRIPT_DIR/app" ]; then
     echo "Error: Cannot find application files"
-    echo "Please run this script from the CaaS directory"
+    echo "Make sure run.py and app/ directory exist in: $SCRIPT_DIR"
+    echo ""
+    echo "Current directory structure:"
+    ls -la "$SCRIPT_DIR"
     exit 1
 fi
+
+echo "Found application files in: $SCRIPT_DIR"
+
+echo "[4/8] Creating application directory..."
+APP_DIR="/opt/caas"
+mkdir -p $APP_DIR
+
+echo "[5/8] Copying application files..."
+# Copy all files from script directory to /opt/caas
+cp -r "$SCRIPT_DIR"/* $APP_DIR/
+# Remove the tar file if it exists
+rm -f $APP_DIR/caas.tar.gz 2>/dev/null || true
 
 echo "[5/8] Creating Python virtual environment..."
 python3 -m venv venv
