@@ -694,8 +694,8 @@
     </div>
 
     <script>
-        // API Configuration
-        const API_BASE = 'http://localhost:8000';
+        // API Configuration - automatically detect the base URL
+        const API_BASE = window.location.origin;
         let accessToken = localStorage.getItem('accessToken');
         let currentUsername = localStorage.getItem('username');
 
