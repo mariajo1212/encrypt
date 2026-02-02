@@ -21,18 +21,18 @@ fi
 ACTUAL_USER=${SUDO_USER:-$USER}
 ACTUAL_HOME=$(eval echo ~$ACTUAL_USER)
 
-echo "[1/8] Updating system packages..."
+echo "[1/9] Updating system packages..."
 apt-get update
 apt-get upgrade -y
 
-echo "[2/8] Installing Python 3.10+ and dependencies..."
+echo "[2/9] Installing Python 3.10+ and dependencies..."
 apt-get install -y python3 python3-pip python3-venv git nginx ufw
 
 # Verify Python version
 PYTHON_VERSION=$(python3 --version | cut -d' ' -f2 | cut -d'.' -f1,2)
 echo "Python version: $PYTHON_VERSION"
 
-echo "[3/8] Detecting application files..."
+echo "[3/9] Detecting application files..."
 # Get the directory where this script is located
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
@@ -48,25 +48,28 @@ fi
 
 echo "Found application files in: $SCRIPT_DIR"
 
-echo "[4/8] Creating application directory..."
+echo "[4/9] Creating application directory..."
 APP_DIR="/opt/caas"
 mkdir -p $APP_DIR
 
-echo "[5/8] Copying application files..."
+echo "[5/9] Copying application files..."
 # Copy all files from script directory to /opt/caas
 cp -r "$SCRIPT_DIR"/* $APP_DIR/
 # Remove the tar file if it exists
 rm -f $APP_DIR/caas.tar.gz 2>/dev/null || true
 
-echo "[5/8] Creating Python virtual environment..."
+# Change to application directory
+cd $APP_DIR
+
+echo "[6/9] Creating Python virtual environment..."
 python3 -m venv venv
 source venv/bin/activate
 
-echo "[6/8] Installing Python dependencies..."
+echo "[7/9] Installing Python dependencies..."
 pip install --upgrade pip
 pip install -r requirements.txt
 
-echo "[7/8] Setting up production environment..."
+echo "[8/9] Setting up production environment..."
 # Generate secure secrets
 JWT_SECRET=$(openssl rand -hex 32)
 MASTER_KEY_SECRET=$(openssl rand -hex 32)
@@ -111,7 +114,7 @@ SSL_KEYFILE=
 SSL_CERTFILE=
 EOF
 
-echo "[8/8] Initializing database and creating test users..."
+echo "[9/9] Initializing database and creating test users..."
 mkdir -p data logs
 python3 -c "from app.db.session import init_db; init_db()"
 python3 -c "from app.db.seed import seed_database; seed_database()"
