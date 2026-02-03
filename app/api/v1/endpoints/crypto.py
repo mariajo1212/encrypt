@@ -5,8 +5,14 @@ This module provides endpoints for encryption, decryption, hashing, and hash ver
 """
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.responses import JSONResponse
+from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 import base64
+import json
+import logging
+
+logger = logging.getLogger(__name__)
 
 from app.db.session import get_db
 from app.models.database import User, Key
@@ -87,9 +93,33 @@ async def encrypt_data(
         key_manager = get_key_manager()
         key_bytes = key_manager.get_decrypted_key(db_key)
 
-        # Encrypt plaintext
-        plaintext_bytes = request.plaintext.encode('utf-8')
-        encrypt_result = encrypt(key_bytes, plaintext_bytes, request.mode)
+        # Convert plaintext to bytes (handle files vs text)
+        if request.is_file:
+            # Decode from base64 if it's a file
+            plaintext_bytes = base64.b64decode(request.plaintext)
+        else:
+            # Regular text encoding
+            plaintext_bytes = request.plaintext.encode('utf-8')
+
+        # Add metadata to data if it's a file
+        if request.is_file:
+            # Create metadata JSON
+            metadata = {
+                "type": "file",
+                "name": getattr(request, 'filename', 'file')
+            }
+            metadata_json = json.dumps(metadata)
+            metadata_bytes = metadata_json.encode('utf-8')
+
+            # Format: [4 bytes length][metadata][data]
+            metadata_length = len(metadata_bytes)
+            plaintext_with_meta = metadata_length.to_bytes(4, byteorder='big') + metadata_bytes + plaintext_bytes
+            print(f"[DEBUG ENCRYPT] Added metadata: {metadata}, length: {metadata_length}, total size: {len(plaintext_with_meta)}")
+        else:
+            plaintext_with_meta = plaintext_bytes
+
+        # Encrypt data
+        encrypt_result = encrypt(key_bytes, plaintext_with_meta, request.mode)
 
         # Encode results based on requested format
         if request.encoding.value == "base64":
@@ -209,10 +239,63 @@ async def decrypt_data(
             tag_bytes
         )
 
-        # Decode plaintext to string
-        plaintext = plaintext_bytes.decode('utf-8')
+        # Try to extract metadata from decrypted data
+        is_file = False
+        filename = None
+        actual_data = plaintext_bytes
 
-        return DecryptResponse(plaintext=plaintext)
+        # Check if data starts with metadata (4 bytes length + JSON)
+        if len(plaintext_bytes) >= 4:
+            try:
+                metadata_length = int.from_bytes(plaintext_bytes[:4], byteorder='big')
+                logger.info(f"[DECRYPT DEBUG] Metadata length: {metadata_length}")
+                # Sanity check: metadata shouldn't be larger than 1KB
+                if 0 < metadata_length < 1024 and len(plaintext_bytes) >= 4 + metadata_length:
+                    metadata_json = plaintext_bytes[4:4+metadata_length].decode('utf-8')
+                    logger.info(f"[DECRYPT DEBUG] Metadata JSON: {metadata_json}")
+                    metadata = json.loads(metadata_json)
+                    logger.info(f"[DECRYPT DEBUG] Parsed metadata: {metadata}")
+
+                    # Validate metadata structure
+                    if isinstance(metadata, dict) and 'type' in metadata:
+                        if metadata['type'] == 'file':
+                            is_file = True
+                            filename = metadata.get('name', 'file')
+                            # Extract actual data (without metadata)
+                            actual_data = plaintext_bytes[4+metadata_length:]
+                            logger.info(f"[DECRYPT DEBUG] Detected file! filename: {filename}, data size: {len(actual_data)}")
+            except Exception as e:
+                # If metadata extraction fails, treat as regular data
+                logger.info(f"[DECRYPT DEBUG] Metadata extraction failed: {e}")
+                pass
+
+        # Return data based on type
+        if is_file:
+            # Return file as base64
+            plaintext = base64.b64encode(actual_data).decode('utf-8')
+        else:
+            # Try to decode as text
+            try:
+                plaintext = actual_data.decode('utf-8')
+            except UnicodeDecodeError:
+                # If can't decode, it might be a file without metadata
+                is_file = True
+                filename = 'file'
+                plaintext = base64.b64encode(actual_data).decode('utf-8')
+
+        logger.info(f"[DECRYPT DEBUG] Returning: was_file={is_file}, filename={filename}, plaintext length={len(plaintext)}")
+
+        # Create response dict explicitly to ensure all fields are present
+        response_data = {
+            "plaintext": plaintext,
+            "was_file": is_file if is_file is not None else False,
+            "filename": filename if filename is not None else None
+        }
+
+        logger.info(f"[DECRYPT DEBUG] Response data: {response_data}")
+
+        # Return explicit JSON response
+        return JSONResponse(content=response_data)
 
     except ValueError as e:
         raise HTTPException(
@@ -265,8 +348,13 @@ async def hash_data_endpoint(
     - Small change in input produces completely different hash
     """
     try:
-        # Convert data to bytes
-        data_bytes = request.data.encode('utf-8')
+        # Convert data to bytes (handle files vs text)
+        if request.is_file:
+            # Decode from base64 if it's a file
+            data_bytes = base64.b64decode(request.data)
+        else:
+            # Regular text encoding
+            data_bytes = request.data.encode('utf-8')
 
         # Generate hash
         hash_value = hash_data(
@@ -321,8 +409,13 @@ async def verify_hash_endpoint(
     - Automatically detects hash format (hex or base64)
     """
     try:
-        # Convert data to bytes
-        data_bytes = request.data.encode('utf-8')
+        # Convert data to bytes (handle files vs text)
+        if request.is_file:
+            # Decode from base64 if it's a file
+            data_bytes = base64.b64decode(request.data)
+        else:
+            # Regular text encoding
+            data_bytes = request.data.encode('utf-8')
 
         # Verify hash
         is_valid = verify_hash(
@@ -423,8 +516,13 @@ async def sign_data_endpoint(
         key_manager = get_key_manager()
         private_key_pem = key_manager.get_decrypted_key(db_key)
 
-        # Convert data to bytes
-        data_bytes = request.data.encode('utf-8')
+        # Convert data to bytes (handle files vs text)
+        if request.is_file:
+            # Decode from base64 if it's a file
+            data_bytes = base64.b64decode(request.data)
+        else:
+            # Regular text encoding
+            data_bytes = request.data.encode('utf-8')
 
         # Sign data
         signature_bytes = sign_data(
@@ -529,8 +627,13 @@ async def verify_signature_endpoint(
         key_manager = get_key_manager()
         public_key_pem = key_manager.get_decrypted_key(db_key)
 
-        # Convert data to bytes
-        data_bytes = request.data.encode('utf-8')
+        # Convert data to bytes (handle files vs text)
+        if request.is_file:
+            # Decode from base64 if it's a file
+            data_bytes = base64.b64decode(request.data)
+        else:
+            # Regular text encoding
+            data_bytes = request.data.encode('utf-8')
 
         # Decode signature from Base64
         signature_bytes = base64.b64decode(request.signature)

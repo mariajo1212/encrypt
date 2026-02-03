@@ -144,6 +144,30 @@ class KeyListResponse(BaseModel):
     limit: int = 10
 
 
+class KeyExportResponse(BaseModel):
+    """Response schema for exporting a key."""
+    key_id: str = Field(..., description="ID of the key")
+    key_name: str = Field(..., description="Name of the key")
+    key_type: str = Field(..., description="Type of key")
+    algorithm: str = Field(..., description="Algorithm used")
+    key_data: str = Field(..., description="Key data (base64 for symmetric, PEM for asymmetric)")
+    format: str = Field(..., description="Format of key data (base64 or pem)")
+    warning: str = Field(..., description="Security warning about key exposure")
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "key_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                "key_name": "my-encryption-key",
+                "key_type": "symmetric",
+                "algorithm": "AES-256",
+                "key_data": "base64encodedkeydata...",
+                "format": "base64",
+                "warning": "Keep this key secure. Anyone with access to this key can decrypt your data."
+            }
+        }
+
+
 # ============================================================================
 # Cryptographic Operation Schemas
 # ============================================================================
@@ -151,16 +175,20 @@ class KeyListResponse(BaseModel):
 class EncryptRequest(BaseModel):
     """Request schema for encryption operation."""
     key_id: str = Field(..., description="ID of the encryption key")
-    plaintext: str = Field(..., min_length=1, description="Data to encrypt")
+    plaintext: str = Field(..., min_length=1, description="Data to encrypt (text or base64)")
     mode: EncryptionMode = Field(default=EncryptionMode.GCM, description="Encryption mode")
     encoding: EncodingFormat = Field(default=EncodingFormat.BASE64, description="Output encoding format")
+    is_file: bool = Field(default=False, description="Whether the data is a file (base64 encoded)")
+    filename: str = Field(default="file", description="Original filename (only used if is_file=True)")
 
     @field_validator('plaintext')
     @classmethod
     def validate_plaintext_size(cls, v):
         """Validate plaintext size (max 10MB)."""
-        if len(v.encode('utf-8')) > 10 * 1024 * 1024:
-            raise ValueError("Plaintext exceeds maximum size of 10MB")
+        # For base64, estimate decoded size
+        estimated_size = len(v) * 3 // 4  # Base64 expands by ~33%
+        if estimated_size > 10 * 1024 * 1024:
+            raise ValueError("Data exceeds maximum size of 10MB")
         return v
 
     class Config:
@@ -203,6 +231,7 @@ class DecryptRequest(BaseModel):
     iv: str = Field(..., description="Initialization vector")
     mode: EncryptionMode = Field(..., description="Encryption mode")
     tag: Optional[str] = Field(None, description="Authentication tag (required for GCM)")
+    was_file: bool = Field(default=False, description="Whether the original data was a file")
 
     class Config:
         json_schema_extra = {
@@ -218,27 +247,36 @@ class DecryptRequest(BaseModel):
 
 class DecryptResponse(BaseModel):
     """Response schema for decryption operation."""
-    plaintext: str = Field(..., description="Decrypted data")
+    plaintext: str = Field(..., description="Decrypted data (text or base64 if file)")
+    was_file: bool = Field(default=False, description="Whether the decrypted data was originally a file")
+    filename: Optional[str] = Field(default=None, description="Original filename (if was a file)")
 
     class Config:
         json_schema_extra = {
             "example": {
-                "plaintext": "Decrypted sensitive data"
+                "plaintext": "Decrypted sensitive data",
+                "was_file": False,
+                "filename": None
             }
         }
+        # Ensure all fields are included in JSON serialization
+        use_enum_values = True
 
 
 class HashRequest(BaseModel):
     """Request schema for hashing operation."""
-    data: str = Field(..., min_length=1, description="Data to hash")
+    data: str = Field(..., min_length=1, description="Data to hash (text or base64)")
     algorithm: AlgorithmType = Field(default=AlgorithmType.SHA_256, description="Hash algorithm")
     return_format: EncodingFormat = Field(default=EncodingFormat.HEX, description="Output format")
+    is_file: bool = Field(default=False, description="Whether the data is a file (base64 encoded)")
 
     @field_validator('data')
     @classmethod
     def validate_data_size(cls, v):
         """Validate data size (max 10MB)."""
-        if len(v.encode('utf-8')) > 10 * 1024 * 1024:
+        # For base64, estimate decoded size
+        estimated_size = len(v) * 3 // 4
+        if estimated_size > 10 * 1024 * 1024:
             raise ValueError("Data exceeds maximum size of 10MB")
         return v
 
@@ -268,16 +306,18 @@ class HashResponse(BaseModel):
 
 class HashVerifyRequest(BaseModel):
     """Request schema for hash verification."""
-    data: str = Field(..., min_length=1, description="Original data")
+    data: str = Field(..., min_length=1, description="Original data (text or base64)")
     hash: str = Field(..., description="Hash to verify against")
     algorithm: AlgorithmType = Field(default=AlgorithmType.SHA_256, description="Hash algorithm")
+    is_file: bool = Field(default=False, description="Whether the data is a file (base64 encoded)")
 
     class Config:
         json_schema_extra = {
             "example": {
                 "data": "Original data",
                 "hash": "a1b2c3d4e5f67890...",
-                "algorithm": "SHA-256"
+                "algorithm": "SHA-256",
+                "is_file": False
             }
         }
 
@@ -297,9 +337,10 @@ class HashVerifyResponse(BaseModel):
 class SignRequest(BaseModel):
     """Request schema for digital signature."""
     key_id: str = Field(..., description="ID of the private key")
-    data: str = Field(..., min_length=1, description="Data to sign")
+    data: str = Field(..., min_length=1, description="Data to sign (text or base64)")
     algorithm: SignatureAlgorithm = Field(..., description="Signature algorithm")
     hash_algorithm: AlgorithmType = Field(default=AlgorithmType.SHA_256, description="Hash algorithm")
+    is_file: bool = Field(default=False, description="Whether the data is a file (base64 encoded)")
 
     class Config:
         json_schema_extra = {
@@ -333,10 +374,11 @@ class SignResponse(BaseModel):
 class VerifyRequest(BaseModel):
     """Request schema for signature verification."""
     key_id: str = Field(..., description="ID of the public key")
-    data: str = Field(..., min_length=1, description="Original data")
+    data: str = Field(..., min_length=1, description="Original data (text or base64)")
     signature: str = Field(..., description="Signature to verify")
     algorithm: SignatureAlgorithm = Field(..., description="Signature algorithm")
     hash_algorithm: AlgorithmType = Field(default=AlgorithmType.SHA_256, description="Hash algorithm")
+    is_file: bool = Field(default=False, description="Whether the data is a file (base64 encoded)")
 
     class Config:
         json_schema_extra = {

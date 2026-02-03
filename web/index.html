@@ -500,8 +500,26 @@
                             </select>
                         </div>
                         <div class="form-group">
+                            <label>Tipo de Datos</label>
+                            <div style="display: flex; gap: 20px; margin-bottom: 10px;">
+                                <label style="display: flex; align-items: center; cursor: pointer;">
+                                    <input type="radio" name="encryptDataType" value="text" checked style="margin-right: 5px;">
+                                    Texto
+                                </label>
+                                <label style="display: flex; align-items: center; cursor: pointer;">
+                                    <input type="radio" name="encryptDataType" value="file" style="margin-right: 5px;">
+                                    Archivo
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group" id="encryptTextGroup">
                             <label>Texto a Cifrar</label>
-                            <textarea id="plaintext" placeholder="Escribe el texto que deseas cifrar..." required></textarea>
+                            <textarea id="plaintext" placeholder="Escribe el texto que deseas cifrar..."></textarea>
+                        </div>
+                        <div class="form-group" id="encryptFileGroup" style="display: none;">
+                            <label>Archivo a Cifrar</label>
+                            <input type="file" id="encryptFile" accept="*/*">
+                            <small style="color: var(--gray); display: block; margin-top: 5px;">Tamaño máximo: 10MB</small>
                         </div>
                         <button type="submit" class="btn btn-success">Cifrar Datos</button>
                     </form>
@@ -563,8 +581,26 @@
                             </select>
                         </div>
                         <div class="form-group">
+                            <label>Tipo de Datos</label>
+                            <div style="display: flex; gap: 20px; margin-bottom: 10px;">
+                                <label style="display: flex; align-items: center; cursor: pointer;">
+                                    <input type="radio" name="hashDataType" value="text" checked style="margin-right: 5px;">
+                                    Texto
+                                </label>
+                                <label style="display: flex; align-items: center; cursor: pointer;">
+                                    <input type="radio" name="hashDataType" value="file" style="margin-right: 5px;">
+                                    Archivo
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group" id="hashTextGroup">
                             <label>Datos a Hashear</label>
-                            <textarea id="hashData" placeholder="Escribe los datos..." required></textarea>
+                            <textarea id="hashData" placeholder="Escribe los datos..."></textarea>
+                        </div>
+                        <div class="form-group" id="hashFileGroup" style="display: none;">
+                            <label>Archivo a Hashear</label>
+                            <input type="file" id="hashFile" accept="*/*">
+                            <small style="color: var(--gray); display: block; margin-top: 5px;">Tamaño máximo: 10MB</small>
                         </div>
                         <div class="form-group">
                             <label>Formato de Salida</label>
@@ -590,8 +626,26 @@
                             </select>
                         </div>
                         <div class="form-group">
+                            <label>Tipo de Datos</label>
+                            <div style="display: flex; gap: 20px; margin-bottom: 10px;">
+                                <label style="display: flex; align-items: center; cursor: pointer;">
+                                    <input type="radio" name="verifyHashDataType" value="text" checked style="margin-right: 5px;">
+                                    Texto
+                                </label>
+                                <label style="display: flex; align-items: center; cursor: pointer;">
+                                    <input type="radio" name="verifyHashDataType" value="file" style="margin-right: 5px;">
+                                    Archivo
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group" id="verifyHashTextGroup">
                             <label>Datos Originales</label>
-                            <textarea id="verifyData" placeholder="Datos a verificar..." required></textarea>
+                            <textarea id="verifyData" placeholder="Datos a verificar..."></textarea>
+                        </div>
+                        <div class="form-group" id="verifyHashFileGroup" style="display: none;">
+                            <label>Archivo a Verificar</label>
+                            <input type="file" id="verifyHashFile" accept="*/*">
+                            <small style="color: var(--gray); display: block; margin-top: 5px;">Tamaño máximo: 10MB</small>
                         </div>
                         <div class="form-group">
                             <label>Hash Esperado</label>
@@ -622,8 +676,26 @@
                             </select>
                         </div>
                         <div class="form-group">
+                            <label>Tipo de Datos</label>
+                            <div style="display: flex; gap: 20px; margin-bottom: 10px;">
+                                <label style="display: flex; align-items: center; cursor: pointer;">
+                                    <input type="radio" name="signDataType" value="text" checked style="margin-right: 5px;">
+                                    Texto
+                                </label>
+                                <label style="display: flex; align-items: center; cursor: pointer;">
+                                    <input type="radio" name="signDataType" value="file" style="margin-right: 5px;">
+                                    Archivo
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group" id="signTextGroup">
                             <label>Datos a Firmar</label>
-                            <textarea id="signData" placeholder="Documento o mensaje a firmar..." required></textarea>
+                            <textarea id="signData" placeholder="Documento o mensaje a firmar..."></textarea>
+                        </div>
+                        <div class="form-group" id="signFileGroup" style="display: none;">
+                            <label>Archivo a Firmar</label>
+                            <input type="file" id="signFile" accept="*/*">
+                            <small style="color: var(--gray); display: block; margin-top: 5px;">Tamaño máximo: 10MB</small>
                         </div>
                         <div class="form-group">
                             <label>Algoritmo Hash</label>
@@ -648,8 +720,26 @@
                             </select>
                         </div>
                         <div class="form-group">
+                            <label>Tipo de Datos</label>
+                            <div style="display: flex; gap: 20px; margin-bottom: 10px;">
+                                <label style="display: flex; align-items: center; cursor: pointer;">
+                                    <input type="radio" name="verifySignDataType" value="text" checked style="margin-right: 5px;">
+                                    Texto
+                                </label>
+                                <label style="display: flex; align-items: center; cursor: pointer;">
+                                    <input type="radio" name="verifySignDataType" value="file" style="margin-right: 5px;">
+                                    Archivo
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group" id="verifySignTextGroup">
                             <label>Datos Originales</label>
-                            <textarea id="verifySignData" placeholder="Datos firmados..." required></textarea>
+                            <textarea id="verifySignData" placeholder="Datos firmados..."></textarea>
+                        </div>
+                        <div class="form-group" id="verifySignFileGroup" style="display: none;">
+                            <label>Archivo Original</label>
+                            <input type="file" id="verifySignFile" accept="*/*">
+                            <small style="color: var(--gray); display: block; margin-top: 5px;">Tamaño máximo: 10MB</small>
                         </div>
                         <div class="form-group">
                             <label>Firma (Base64)</label>
@@ -699,11 +789,146 @@
         let accessToken = localStorage.getItem('accessToken');
         let currentUsername = localStorage.getItem('username');
 
+        // Helper function to download text file
+        function downloadTextFile(filename, content) {
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Helper function to read file as Base64
+        function readFileAsBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    const base64 = reader.result.split(',')[1]; // Remove data:mime;base64, prefix
+                    resolve(base64);
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // Helper function to download file from Base64
+        function downloadFileFromBase64(filename, base64Content, mimeType = 'application/octet-stream') {
+            const byteCharacters = atob(base64Content);
+            const byteNumbers = new Array(byteCharacters.length);
+            for (let i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+            }
+            const byteArray = new Uint8Array(byteNumbers);
+            const blob = new Blob([byteArray], { type: mimeType });
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Setup radio button listeners for text/file selection
+        function setupDataTypeToggles() {
+            // Encrypt data type toggle
+            document.querySelectorAll('input[name="encryptDataType"]').forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    if (e.target.value === 'text') {
+                        document.getElementById('encryptTextGroup').style.display = 'block';
+                        document.getElementById('encryptFileGroup').style.display = 'none';
+                    } else {
+                        document.getElementById('encryptTextGroup').style.display = 'none';
+                        document.getElementById('encryptFileGroup').style.display = 'block';
+                    }
+                });
+            });
+
+            // Hash data type toggle
+            document.querySelectorAll('input[name="hashDataType"]').forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    if (e.target.value === 'text') {
+                        document.getElementById('hashTextGroup').style.display = 'block';
+                        document.getElementById('hashFileGroup').style.display = 'none';
+                    } else {
+                        document.getElementById('hashTextGroup').style.display = 'none';
+                        document.getElementById('hashFileGroup').style.display = 'block';
+                    }
+                });
+            });
+
+            // Sign data type toggle
+            document.querySelectorAll('input[name="signDataType"]').forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    if (e.target.value === 'text') {
+                        document.getElementById('signTextGroup').style.display = 'block';
+                        document.getElementById('signFileGroup').style.display = 'none';
+                    } else {
+                        document.getElementById('signTextGroup').style.display = 'none';
+                        document.getElementById('signFileGroup').style.display = 'block';
+                    }
+                });
+            });
+
+            // Verify hash data type toggle
+            document.querySelectorAll('input[name="verifyHashDataType"]').forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    if (e.target.value === 'text') {
+                        document.getElementById('verifyHashTextGroup').style.display = 'block';
+                        document.getElementById('verifyHashFileGroup').style.display = 'none';
+                    } else {
+                        document.getElementById('verifyHashTextGroup').style.display = 'none';
+                        document.getElementById('verifyHashFileGroup').style.display = 'block';
+                    }
+                });
+            });
+
+            // Verify signature data type toggle
+            document.querySelectorAll('input[name="verifySignDataType"]').forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    if (e.target.value === 'text') {
+                        document.getElementById('verifySignTextGroup').style.display = 'block';
+                        document.getElementById('verifySignFileGroup').style.display = 'none';
+                    } else {
+                        document.getElementById('verifySignTextGroup').style.display = 'none';
+                        document.getElementById('verifySignFileGroup').style.display = 'block';
+                    }
+                });
+            });
+
+            // Decrypt mode toggle (show/hide Tag field for GCM vs CBC)
+            const decryptModeSelect = document.getElementById('decryptMode');
+            if (decryptModeSelect) {
+                decryptModeSelect.addEventListener('change', (e) => {
+                    const tagGroup = document.getElementById('decryptTagGroup');
+                    if (e.target.value === 'GCM') {
+                        tagGroup.style.display = 'block';
+                    } else {
+                        tagGroup.style.display = 'none';
+                    }
+                });
+            }
+
+            // Encrypt mode toggle (show/hide info about Tag)
+            const encryptModeSelect = document.getElementById('encryptMode');
+            if (encryptModeSelect) {
+                encryptModeSelect.addEventListener('change', (e) => {
+                    // Optional: Add visual feedback about the mode
+                });
+            }
+        }
+
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             if (accessToken && currentUsername) {
                 showDashboard();
             }
+            setupDataTypeToggles();
         });
 
         // Login
@@ -817,6 +1042,7 @@
                                 <strong>Creada:</strong> ${new Date(key.created_at).toLocaleString()}
                             </div>
                             <div class="card-actions">
+                                <button class="btn btn-primary" onclick="downloadKey('${key.id}', '${key.key_name}', '${key.key_type}')">Descargar</button>
                                 <button class="btn btn-danger" onclick="deleteKey('${key.id}')">Eliminar</button>
                             </div>
                         </div>
@@ -840,6 +1066,43 @@
                 }
             } catch (error) {
                 showAlert('keysAlert', 'Error al eliminar clave', 'error');
+            }
+        }
+
+        async function downloadKey(keyId, keyName, keyType) {
+            // Show security warning
+            const warningMessage = keyType.includes('private')
+                ? '⚠️ ADVERTENCIA DE SEGURIDAD:\n\nEstás a punto de descargar una clave PRIVADA. Cualquier persona con acceso a esta clave puede descifrar tus datos o falsificar firmas.\n\n¿Estás seguro que deseas continuar?'
+                : '⚠️ ADVERTENCIA:\n\nEstás a punto de descargar material criptográfico. Mantén esta clave segura.\n\n¿Deseas continuar?';
+
+            if (!confirm(warningMessage)) return;
+
+            try {
+                const response = await apiCall(`/api/keys/${keyId}/export`, 'GET');
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Determine file extension based on format
+                    const extension = data.format === 'pem' ? 'pem' : 'key';
+                    const filename = `${keyName}_${keyId.substring(0, 8)}.${extension}`;
+
+                    // Create blob and download
+                    const blob = new Blob([data.key_data], { type: 'text/plain' });
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
+
+                    showAlert('keysAlert', `Clave descargada: ${filename}`, 'success');
+                } else {
+                    showAlert('keysAlert', data.error?.message || 'Error al descargar clave', 'error');
+                }
+            } catch (error) {
+                showAlert('keysAlert', 'Error de conexión al descargar clave', 'error');
             }
         }
 
@@ -883,20 +1146,43 @@
         document.getElementById('encryptForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const keyId = document.getElementById('encryptKeyId').value;
-            const plaintext = document.getElementById('plaintext').value;
             const mode = document.getElementById('encryptMode').value;
+            const dataType = document.querySelector('input[name="encryptDataType"]:checked').value;
+
+            let plaintextData, isFile = false, originalFilename = '';
 
             try {
+                // Get data based on type
+                if (dataType === 'file') {
+                    const fileInput = document.getElementById('encryptFile');
+                    if (!fileInput.files || !fileInput.files[0]) {
+                        showAlert('encryptAlert', 'Por favor selecciona un archivo', 'error');
+                        return;
+                    }
+                    const file = fileInput.files[0];
+                    originalFilename = file.name;
+                    plaintextData = await readFileAsBase64(file);
+                    isFile = true;
+                } else {
+                    plaintextData = document.getElementById('plaintext').value;
+                    if (!plaintextData) {
+                        showAlert('encryptAlert', 'Por favor ingresa texto para cifrar', 'error');
+                        return;
+                    }
+                }
+
                 const response = await apiCall('/api/crypto/encrypt', 'POST', {
                     key_id: keyId,
-                    plaintext: plaintext,
-                    mode: mode
+                    plaintext: plaintextData,
+                    mode: mode,
+                    is_file: isFile,
+                    filename: originalFilename || 'file'
                 });
 
                 const data = await response.json();
 
                 if (response.ok) {
-                    showAlert('encryptAlert', 'Datos cifrados exitosamente!', 'success');
+                    showAlert('encryptAlert', 'Datos cifrados exitosamente! Archivo descargado.', 'success');
                     document.getElementById('encryptAlert').innerHTML += `
                         <div class="code-block">
                             <strong>Ciphertext:</strong> ${data.ciphertext}<br>
@@ -904,6 +1190,29 @@
                             ${data.tag ? `<strong>Tag:</strong> ${data.tag}` : ''}
                         </div>
                     `;
+
+                    // Download result as text file
+                    const timestamp = new Date().toISOString().replace(/[:.]/g, '-').split('T')[0];
+                    const fileContent = `CaaS - Resultado de Cifrado
+Fecha: ${new Date().toLocaleString()}
+Key ID: ${keyId}
+Modo: ${mode}
+Tipo: ${isFile ? 'Archivo' : 'Texto'}${isFile ? `\nArchivo Original: ${originalFilename}` : ''}
+
+=== DATOS CIFRADOS ===
+Ciphertext: ${data.ciphertext}
+IV/Nonce: ${data.iv || data.nonce}${data.tag ? `\nTag: ${data.tag}` : ''}
+
+=== INSTRUCCIONES ===
+Para descifrar:
+1. Copia y pega el Ciphertext, IV/Nonce${data.tag ? ' y Tag' : ''}
+2. Dale click en "Descifrar Datos"
+${isFile ? '3. El archivo original se descargará automáticamente como: ' + originalFilename : ''}
+
+Nota: La metadata del archivo (nombre original) está integrada en el Ciphertext.
+No necesitas especificar si es archivo o texto, el sistema lo detecta automáticamente.
+`;
+                    downloadTextFile(`encrypted_${timestamp}.txt`, fileContent);
                 } else {
                     showAlert('encryptAlert', data.error?.message || 'Error al cifrar', 'error');
                 }
@@ -924,7 +1233,8 @@
                 key_id: keyId,
                 ciphertext: ciphertext,
                 iv: iv,
-                mode: mode
+                mode: mode,
+                was_file: false  // Backend will auto-detect if it's a file
             };
 
             if (mode === 'GCM' && tag) {
@@ -936,12 +1246,18 @@
                 const data = await response.json();
 
                 if (response.ok) {
-                    showAlert('encryptAlert', 'Datos descifrados exitosamente!', 'success');
-                    document.getElementById('encryptAlert').innerHTML += `
-                        <div class="code-block">
-                            <strong>Texto Original:</strong><br>${data.plaintext}
-                        </div>
-                    `;
+                    // Always download the result, whether it's a file or text
+                    if (data.was_file) {
+                        // Download the binary file with original filename
+                        const filename = data.filename || 'decrypted_file';
+                        downloadFileFromBase64(filename, data.plaintext);
+                        showAlert('encryptAlert', `Archivo descifrado exitosamente! Descargando: ${filename}`, 'success');
+                    } else {
+                        // Download as text file
+                        const filename = 'decrypted_text.txt';
+                        downloadTextFile(filename, data.plaintext);
+                        showAlert('encryptAlert', `Texto descifrado exitosamente! Descargando: ${filename}`, 'success');
+                    }
                 } else {
                     showAlert('encryptAlert', data.error?.message || 'Error al descifrar', 'error');
                 }
@@ -953,26 +1269,61 @@
         // Hash
         document.getElementById('hashForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const data = document.getElementById('hashData').value;
+
+            const dataType = document.querySelector('input[name="hashDataType"]:checked').value;
             const algorithm = document.getElementById('hashAlgorithm').value;
             const encoding = document.getElementById('hashEncoding').value;
 
+            let hashData, isFile = false, originalFilename = '';
+
+            if (dataType === 'file') {
+                const fileInput = document.getElementById('hashFile');
+                if (!fileInput.files || !fileInput.files[0]) {
+                    showAlert('hashAlert', 'Por favor selecciona un archivo', 'error');
+                    return;
+                }
+                const file = fileInput.files[0];
+                originalFilename = file.name;
+                hashData = await readFileAsBase64(file);
+                isFile = true;
+            } else {
+                hashData = document.getElementById('hashData').value;
+            }
+
             try {
                 const response = await apiCall('/api/crypto/hash', 'POST', {
-                    data: data,
+                    data: hashData,
                     algorithm: algorithm,
-                    encoding: encoding
+                    encoding: encoding,
+                    is_file: isFile
                 });
 
                 const result = await response.json();
 
                 if (response.ok) {
-                    showAlert('hashAlert', 'Hash generado exitosamente!', 'success');
+                    showAlert('hashAlert', 'Hash generado exitosamente! Archivo descargado.', 'success');
                     document.getElementById('hashAlert').innerHTML += `
                         <div class="code-block">
                             <strong>Hash ${algorithm}:</strong><br>${result.hash}
                         </div>
                     `;
+
+                    // Download result as text file
+                    const timestamp = new Date().toISOString().replace(/[:.]/g, '-').split('T')[0];
+                    const fileContent = `CaaS - Resultado de Hash
+Fecha: ${new Date().toLocaleString()}
+Algoritmo: ${algorithm}
+Codificación: ${encoding}
+Tipo: ${isFile ? 'Archivo' : 'Texto'}${isFile ? `\nArchivo Original: ${originalFilename}` : ''}
+
+=== HASH GENERADO ===
+${result.hash}
+
+=== INSTRUCCIONES ===
+Este hash puede ser usado para verificar la integridad de los datos.
+Para verificar, usa este hash junto con los datos originales.
+`;
+                    downloadTextFile(`hash_${algorithm}_${timestamp}.txt`, fileContent);
                 } else {
                     showAlert('hashAlert', result.error?.message || 'Error al generar hash', 'error');
                 }
@@ -983,15 +1334,32 @@
 
         document.getElementById('verifyHashForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const data = document.getElementById('verifyData').value;
+
+            const dataType = document.querySelector('input[name="verifyHashDataType"]:checked').value;
             const algorithm = document.getElementById('verifyAlgorithm').value;
             const expectedHash = document.getElementById('expectedHash').value;
 
+            let verifyData, isFile = false;
+
+            if (dataType === 'file') {
+                const fileInput = document.getElementById('verifyHashFile');
+                if (!fileInput.files || !fileInput.files[0]) {
+                    showAlert('hashAlert', 'Por favor selecciona un archivo', 'error');
+                    return;
+                }
+                const file = fileInput.files[0];
+                verifyData = await readFileAsBase64(file);
+                isFile = true;
+            } else {
+                verifyData = document.getElementById('verifyData').value;
+            }
+
             try {
                 const response = await apiCall('/api/crypto/hash/verify', 'POST', {
-                    data: data,
+                    data: verifyData,
                     hash: expectedHash,
-                    algorithm: algorithm
+                    algorithm: algorithm,
+                    is_file: isFile
                 });
 
                 const result = await response.json();
@@ -1011,22 +1379,30 @@
         });
 
         // Signatures
+        let availableKeys = {}; // Store keys for signature algorithm detection
+
         async function loadKeysForSigning() {
             try {
                 const response = await apiCall('/api/keys', 'GET');
                 const data = await response.json();
 
                 if (response.ok && data.keys) {
+                    // Store keys in global variable for later use
+                    availableKeys = {};
+                    data.keys.forEach(k => {
+                        availableKeys[k.id] = k;
+                    });
+
                     const privateKeys = data.keys.filter(k => k.key_type.includes('private'));
                     const publicKeys = data.keys.filter(k => k.key_type.includes('public'));
 
                     document.getElementById('signKeyId').innerHTML =
                         '<option value="">Selecciona clave privada...</option>' +
-                        privateKeys.map(k => `<option value="${k.id}">${k.key_name} (${k.algorithm})</option>`).join('');
+                        privateKeys.map(k => `<option value="${k.id}" data-key-type="${k.key_type}" data-algorithm="${k.algorithm}">${k.key_name} (${k.algorithm})</option>`).join('');
 
                     document.getElementById('verifyKeyId').innerHTML =
                         '<option value="">Selecciona clave pública...</option>' +
-                        publicKeys.map(k => `<option value="${k.id}">${k.key_name} (${k.algorithm})</option>`).join('');
+                        publicKeys.map(k => `<option value="${k.id}" data-key-type="${k.key_type}" data-algorithm="${k.algorithm}">${k.key_name} (${k.algorithm})</option>`).join('');
                 }
             } catch (error) {
                 console.error('Error loading keys:', error);
@@ -1036,37 +1412,81 @@
         document.getElementById('signForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const keyId = document.getElementById('signKeyId').value;
-            const data = document.getElementById('signData').value;
             const hashAlgo = document.getElementById('signHashAlgo').value;
 
-            // Determine signature algorithm based on selected key
-            const selectedOption = document.getElementById('signKeyId').selectedOptions[0];
-            const keyAlgorithm = selectedOption ? selectedOption.text.match(/\((.*?)\)/)?.[1] : '';
+            const dataType = document.querySelector('input[name="signDataType"]:checked').value;
+            let signData, isFile = false, originalFilename = '';
 
+            if (dataType === 'file') {
+                const fileInput = document.getElementById('signFile');
+                if (!fileInput.files || !fileInput.files[0]) {
+                    showAlert('signAlert', 'Por favor selecciona un archivo', 'error');
+                    return;
+                }
+                const file = fileInput.files[0];
+                originalFilename = file.name;
+                signData = await readFileAsBase64(file);
+                isFile = true;
+            } else {
+                signData = document.getElementById('signData').value;
+            }
+
+            // Determine signature algorithm based on selected key type
+            const selectedKey = availableKeys[keyId];
             let signatureAlgorithm = 'RSA-PSS'; // Default
-            if (keyAlgorithm && keyAlgorithm.startsWith('ECC')) {
-                signatureAlgorithm = 'ECDSA';
-            } else if (keyAlgorithm && keyAlgorithm.startsWith('RSA')) {
-                signatureAlgorithm = 'RSA-PSS'; // Or 'RSA-PKCS1'
+
+            if (selectedKey) {
+                // Check key_type to determine the correct signature algorithm
+                if (selectedKey.key_type === 'ecc_private') {
+                    signatureAlgorithm = 'ECDSA';
+                } else if (selectedKey.key_type === 'rsa_private') {
+                    signatureAlgorithm = 'RSA-PSS';
+                }
+                console.log('Selected key:', selectedKey.key_name, 'Type:', selectedKey.key_type, 'Algorithm:', signatureAlgorithm);
             }
 
             try {
                 const response = await apiCall('/api/crypto/sign', 'POST', {
                     key_id: keyId,
-                    data: data,
+                    data: signData,
                     algorithm: signatureAlgorithm,
-                    hash_algorithm: hashAlgo
+                    hash_algorithm: hashAlgo,
+                    is_file: isFile
                 });
 
                 const result = await response.json();
 
                 if (response.ok) {
-                    showAlert('signAlert', 'Datos firmados exitosamente!', 'success');
+                    showAlert('signAlert', 'Datos firmados exitosamente! Archivo descargado.', 'success');
                     document.getElementById('signAlert').innerHTML += `
                         <div class="code-block">
                             <strong>Firma Digital (Base64):</strong><br>${result.signature}
                         </div>
                     `;
+
+                    // Download result as text file
+                    const timestamp = new Date().toISOString().replace(/[:.]/g, '-').split('T')[0];
+                    const fileContent = `CaaS - Firma Digital
+Fecha: ${new Date().toLocaleString()}
+Key ID: ${keyId}
+Algoritmo de Firma: ${signatureAlgorithm}
+Algoritmo de Hash: ${hashAlgo}
+Tipo: ${isFile ? 'Archivo' : 'Texto'}${isFile ? `\nArchivo Original: ${originalFilename}` : ''}
+
+=== FIRMA GENERADA (Base64) ===
+${result.signature}
+
+${!isFile ? `=== DATOS FIRMADOS ===
+${signData}
+
+` : ''}=== INSTRUCCIONES ===
+Esta firma digital puede ser usada para verificar la autenticidad e integridad de los datos.
+Para verificar, necesitas:
+1. Los datos originales${isFile ? ` (archivo: ${originalFilename})` : ' (incluidos arriba)'}
+2. Esta firma (Base64)
+3. La clave pública correspondiente (Key ID: ${keyId})
+`;
+                    downloadTextFile(`signature_${timestamp}.txt`, fileContent);
                 } else {
                     showAlert('signAlert', result.error?.message || 'Error al firmar', 'error');
                 }
@@ -1078,28 +1498,47 @@
         document.getElementById('verifySignForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const keyId = document.getElementById('verifyKeyId').value;
-            const data = document.getElementById('verifySignData').value;
             const signature = document.getElementById('signature').value;
             const hashAlgo = document.getElementById('verifyHashAlgo').value;
 
-            // Determine signature algorithm based on selected key
-            const selectedOption = document.getElementById('verifyKeyId').selectedOptions[0];
-            const keyAlgorithm = selectedOption ? selectedOption.text.match(/\((.*?)\)/)?.[1] : '';
+            const dataType = document.querySelector('input[name="verifySignDataType"]:checked').value;
+            let verifyData, isFile = false;
 
+            if (dataType === 'file') {
+                const fileInput = document.getElementById('verifySignFile');
+                if (!fileInput.files || !fileInput.files[0]) {
+                    showAlert('signAlert', 'Por favor selecciona un archivo', 'error');
+                    return;
+                }
+                const file = fileInput.files[0];
+                verifyData = await readFileAsBase64(file);
+                isFile = true;
+            } else {
+                verifyData = document.getElementById('verifySignData').value;
+            }
+
+            // Determine signature algorithm based on selected key type
+            const selectedKey = availableKeys[keyId];
             let signatureAlgorithm = 'RSA-PSS'; // Default
-            if (keyAlgorithm && keyAlgorithm.startsWith('ECC')) {
-                signatureAlgorithm = 'ECDSA';
-            } else if (keyAlgorithm && keyAlgorithm.startsWith('RSA')) {
-                signatureAlgorithm = 'RSA-PSS';
+
+            if (selectedKey) {
+                // Check key_type to determine the correct signature algorithm
+                if (selectedKey.key_type === 'ecc_public') {
+                    signatureAlgorithm = 'ECDSA';
+                } else if (selectedKey.key_type === 'rsa_public') {
+                    signatureAlgorithm = 'RSA-PSS';
+                }
+                console.log('Selected key:', selectedKey.key_name, 'Type:', selectedKey.key_type, 'Algorithm:', signatureAlgorithm);
             }
 
             try {
                 const response = await apiCall('/api/crypto/verify', 'POST', {
                     key_id: keyId,
-                    data: data,
+                    data: verifyData,
                     signature: signature,
                     algorithm: signatureAlgorithm,
-                    hash_algorithm: hashAlgo
+                    hash_algorithm: hashAlgo,
+                    is_file: isFile
                 });
 
                 const result = await response.json();

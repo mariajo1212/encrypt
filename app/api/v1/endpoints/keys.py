@@ -8,11 +8,12 @@ cryptographic keys.
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional
+import base64
 
 from app.db.session import get_db
 from app.models.database import User, Key
 from app.models.schemas import (
-    KeyCreateRequest, KeyResponse, KeyListResponse, MessageResponse
+    KeyCreateRequest, KeyResponse, KeyListResponse, KeyExportResponse, MessageResponse
 )
 from app.models.enums import KeyType, AlgorithmType
 from app.dependencies import get_current_user
@@ -225,6 +226,94 @@ async def list_keys(
         total=total,
         page=page,
         limit=limit
+    )
+
+
+# IMPORTANT: More specific routes must be defined BEFORE generic routes
+# /{key_id}/export must come before /{key_id}
+@router.get(
+    "/{key_id}/export",
+    response_model=KeyExportResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Export a cryptographic key",
+    description="Download the actual key material for a specific key (USE WITH CAUTION)"
+)
+async def export_key(
+    key_id: str,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Export the actual key material for a specific key.
+
+    **⚠️ SECURITY WARNING:**
+    This endpoint exposes the actual cryptographic key material. Anyone with
+    access to this key can decrypt data or forge signatures. Keep this key
+    secure and never share it publicly.
+
+    **Recommended practices:**
+    - Only export keys when absolutely necessary
+    - Store exported keys in secure storage (e.g., password manager, encrypted vault)
+    - Never commit exported keys to version control
+    - Rotate keys regularly if they may have been exposed
+
+    **Returns:**
+    - For symmetric keys (AES): Base64-encoded key bytes
+    - For asymmetric keys (RSA/ECC): PEM-encoded key
+
+    **Note:** Users can only export their own keys.
+    """
+    # Fetch key
+    db_key = db.query(Key).filter(
+        Key.id == key_id,
+        Key.user_id == current_user.id
+    ).first()
+
+    if not db_key:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Key {key_id} not found"
+        )
+
+    # Get key manager and decrypt key
+    key_manager = get_key_manager()
+
+    try:
+        decrypted_key_bytes = key_manager.get_decrypted_key(db_key)
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to decrypt key: {str(e)}"
+        )
+
+    # Determine format based on key type
+    if db_key.key_type == KeyType.SYMMETRIC.value:
+        # For symmetric keys, return as base64
+        key_data = base64.b64encode(decrypted_key_bytes).decode('utf-8')
+        format_type = "base64"
+        warning = "Keep this key secure. Anyone with access to this key can decrypt your data."
+    else:
+        # For asymmetric keys (RSA/ECC), already in PEM format
+        key_data = decrypted_key_bytes.decode('utf-8')
+        format_type = "pem"
+        if db_key.key_type in [KeyType.RSA_PRIVATE.value, KeyType.ECC_PRIVATE.value]:
+            warning = "Keep this private key secure. Anyone with access to this key can decrypt your data and forge signatures."
+        else:
+            warning = "This is a public key and can be safely shared. It's used for encryption and signature verification."
+
+    return KeyExportResponse(
+        key_id=db_key.id,
+        key_name=db_key.key_name,
+        key_type=db_key.key_type,
+        algorithm=db_key.algorithm,
+        key_data=key_data,
+        format=format_type,
+        warning=warning
     )
 
 
